@@ -19,11 +19,17 @@ def get_auth_token():
         if 'AWS_LAMBDA_FUNCTION_NAME' in os.environ:
             kms = boto3.client('kms')
             refresh_token = kms.decrypt(
-                CiphertextBlob=b64decode(os.environ['SPOTIFY_REFRESH_TOKEN']))['Plaintext']
+                CiphertextBlob=b64decode(os.environ['SPOTIFY_REFRESH_TOKEN']),
+                EncryptionContext={'LambdaFunctionName': os.environ['AWS_LAMBDA_FUNCTION_NAME']}
+            )['Plaintext'].decode('utf-8')
             spotify_client_id = kms.decrypt(
-                CiphertextBlob=b64decode(os.environ['SPOTIFY_CLIENT_ID']))['Plaintext']
+                CiphertextBlob=b64decode(os.environ['SPOTIFY_CLIENT_ID']),
+                EncryptionContext={'LambdaFunctionName': os.environ['AWS_LAMBDA_FUNCTION_NAME']}
+            )['Plaintext'].decode('utf-8')
             spotify_client_secret = kms.decrypt(
-                CiphertextBlob=b64decode(os.environ['SPOTIFY_CLIENT_SECRET']))['Plaintext']
+                CiphertextBlob=b64decode(os.environ['SPOTIFY_CLIENT_SECRET']),
+                EncryptionContext={'LambdaFunctionName': os.environ['AWS_LAMBDA_FUNCTION_NAME']}
+            )['Plaintext'].decode('utf-8')
         else:
             refresh_token = os.environ['SPOTIFY_REFRESH_TOKEN']
             spotify_client_id = os.environ['SPOTIFY_CLIENT_ID']
